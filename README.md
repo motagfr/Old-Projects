@@ -6,6 +6,14 @@ This repository contains files and folders related to various projects, includin
 
 The files in this repository are provided for reference and educational purposes. The last modification dates of the files can be viewed in the GitHub file history. Please note that these files may not reflect the latest practices or updates in their respective fields.
 
+## Key Files
+
+The most important files in this repository are:
+
+1. `MachineLearning.py` in the `Various Other Projects` folder.
+2. `Visualization_Primes.py` in the `Deep Learning and Visualization of Primes` folder.
+3. `Intel_Image_Classification.py` in the `Deep Learning and Visualization of Primes` folder.
+
 ## Dataset for Image Classification
 
-The dataset for image classification using Keras can be accessed at [Intel Image Classification Dataset](https://www.kaggle.com/datasets/puneet6060/intel-image-classification).     
+The dataset for image classification using Keras can be accessed at [Intel Image Classification Dataset](https://www.kaggle.com/datasets/puneet6060/intel-image-classification).
