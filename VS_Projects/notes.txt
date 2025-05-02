@@ -1,0 +1,1017 @@
+The same works for max and min, if you expand the dimensions:
+
+>>> np.expand_dims(np.max(a, axis=1), axis=1)
+array([[30],
+       [60]])
+>>> ai = np.expand_dims(np.argmax(a, axis=1), axis=1)
+>>> ai
+array([[1],
+       [0]])
+>>> np.take_along_axis(a, ai, axis=1)
+array([[30],
+       [60]])
+If we want to get the max and min at the same time, we can stack the indices first
+
+>>> ai_min = np.expand_dims(np.argmin(a, axis=1), axis=1)
+>>> ai_max = np.expand_dims(np.argmax(a, axis=1), axis=1)
+>>> ai = np.concatenate([ai_min, ai_max], axis=1)
+>>> ai
+array([[0, 1],
+       [1, 0]])
+>>> np.take_along_axis(a, ai, axis=1)
+array([[10, 30],
+       [40, 60]])
+       
+------------------------------------------------
+>>> x = np.array([1, 2])
+>>> x.shape
+(2,)
+The following is equivalent to x[np.newaxis, :] or x[np.newaxis]:
+
+>>> y = np.expand_dims(x, axis=0)
+>>> y
+array([[1, 2]])
+>>> y.shape
+(1, 2)
+The following is equivalent to x[:, np.newaxis]:
+
+>>> y = np.expand_dims(x, axis=1)
+>>> y
+array([[1],
+       [2]])
+>>> y.shape
+(2, 1)
+axis may also be a tuple:
+
+>>> y = np.expand_dims(x, axis=(0, 1))
+>>> y
+array([[[1, 2]]])
+>>> y = np.expand_dims(x, axis=(2, 0))
+>>> y
+array([[[1],
+        [2]]])
+Note that some examples may use None instead of np.newaxis. These are the same objects:
+
+>>> np.newaxis is None
+True
+---------------------------------------------------------
+Examples
+>>> rng = np.random.default_rng()
+>>> rng.integers(2, size=10)
+array([1, 0, 0, 0, 1, 1, 0, 0, 1, 0])  # random
+>>> rng.integers(1, size=10)
+array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+Generate a 2 x 4 array of ints between 0 and 4, inclusive:
+
+>>> rng.integers(5, size=(2, 4))
+array([[4, 0, 2, 1],
+       [3, 2, 2, 0]])  # random
+Generate a 1 x 3 array with 3 different upper bounds
+
+>>> rng.integers(1, [3, 5, 10])
+array([2, 2, 9])  # random
+Generate a 1 by 3 array with 3 different lower bounds
+
+>>> rng.integers([1, 5, 7], 10)
+array([9, 8, 7])  # random
+Generate a 2 by 4 array using broadcasting with dtype of uint8
+
+>>> rng.integers([1, 3, 5, 7], [[10], [20]], dtype=np.uint8)
+array([[ 8,  6,  9,  7],
+       [ 1, 16,  9, 12]], dtype=uint8)  # random
+-----------------------------------------------------------
+Pandas Series str | strip method
+Pandas Series str.strip(~) method removes the combination of the specified characters that appear in the front and back of each string in the Series.
+
+Note that a new Series is returned, and the original is kept intact.
+
+Parameters
+1. to_strip | str or None | optional
+
+The combination of the characters of to_strip that appears at the front or back of each string will be removed. For instance, if to_strip="ab", then abA and baA will both become A.
+
+By default, leading and trailing whitespaces (including newlines and tabs) will be removed.
+
+Return Value
+A new Series or Index.
+
+Examples
+Basic usage
+By default, strip(~) removes leading and trailing whitespaces (including newlines and tabs):
+
+s = pd.Series(["  ","a a","\na","a\t"])
+s_stripped = s.str.strip()
+s_stripped
+0       
+1    a a
+2      a
+3      a
+dtype: object
+To confirm that the whitespaces have indeed been stripped, we print the length of each string:
+
+s_stripped.str.len()
+0    0
+1    3
+2    1
+3    1
+dtype: int64
+Specifying to_strip
+To remove a combination of the characters "ab" at the front and back:
+
+s = pd.Series(["abA","baA"])
+s.str.strip("ab")
+0    A
+1    A
+dtype: object
+Here, notice how "baA" got stripped down to "A" - this is because a combination of the specified characters is stripped ("ab" and "ba" in this case).
+--------------------------------------------------------------
+To remove white spaces:
+To remove white space everywhere:
+df.columns = df.columns.str.replace(' ', '')
+To remove white space at the beginning of string:
+df.columns = df.columns.str.lstrip()
+To remove white space at the end of string:
+df.columns = df.columns.str.rstrip()
+To remove white space at both ends:
+df.columns = df.columns.str.strip()
+To replace white spaces with other characters (underscore for instance):
+To replace white space everywhere
+df.columns = df.columns.str.replace(' ', '_')
+To replace white space at the beginning:
+df.columns = df.columns.str.replace('^ +', '_')
+To replace white space at the end:
+df.columns = df.columns.str.replace(' +$', '_')
+To replace white space at both ends:
+df.columns = df.columns.str.replace('^ +| +$', '_')
+All above applies to a specific column as well, assume you have a column named col, then just do:
+
+df[col] = df[col].str.strip()  # or .replace as above
+Commands can be chained
+
+df.columns = df.columns.str.strip().str.replace(' ', '_')
+-----------------------------------------------------
+pandas.DataFrame.query
+DataFrame.query(expr, *, inplace=False, **kwargs)[source]
+Query the columns of a DataFrame with a boolean expression.
+
+Parameters
+exprstr
+The query string to evaluate.
+
+You can refer to variables in the environment by prefixing them with an ‘@’ character like @a + b.
+
+You can refer to column names that are not valid Python variable names by surrounding them in backticks. Thus, column names containing spaces or punctuations (besides underscores) or starting with digits must be surrounded by backticks. (For example, a column named “Area (cm^2)” would be referenced as `Area (cm^2)`). Column names which are Python keywords (like “list”, “for”, “import”, etc) cannot be used.
+
+For example, if one of your columns is called a a and you want to sum it with b, your query should be `a a` + b.
+
+inplacebool
+Whether to modify the DataFrame rather than creating a new one.
+
+**kwargs
+See the documentation for eval() for complete details on the keyword arguments accepted by DataFrame.query().
+
+Returns
+DataFrame or None
+DataFrame resulting from the provided query expression or None if inplace=True.
+
+See also
+
+eval
+Evaluate a string describing operations on DataFrame columns.
+
+DataFrame.eval
+Evaluate a string describing operations on DataFrame columns.
+
+Notes
+
+The result of the evaluation of this expression is first passed to DataFrame.loc and if that fails because of a multidimensional key (e.g., a DataFrame) then the result will be passed to DataFrame.__getitem__().
+
+This method uses the top-level eval() function to evaluate the passed query.
+
+The query() method uses a slightly modified Python syntax by default. For example, the & and | (bitwise) operators have the precedence of their boolean cousins, and and or. This is syntactically valid Python, however the semantics are different.
+
+You can change the semantics of the expression by passing the keyword argument parser='python'. This enforces the same semantics as evaluation in Python space. Likewise, you can pass engine='python' to evaluate an expression using Python itself as a backend. This is not recommended as it is inefficient compared to using numexpr as the engine.
+
+The DataFrame.index and DataFrame.columns attributes of the DataFrame instance are placed in the query namespace by default, which allows you to treat both the index and columns of the frame as a column in the frame. The identifier index is used for the frame index; you can also use the name of the index to identify it in a query. Please note that Python keywords may not be used as identifiers.
+
+For further details and examples see the query documentation in indexing.
+
+Backtick quoted variables
+
+Backtick quoted variables are parsed as literal Python code and are converted internally to a Python valid identifier. This can lead to the following problems.
+
+During parsing a number of disallowed characters inside the backtick quoted string are replaced by strings that are allowed as a Python identifier. These characters include all operators in Python, the space character, the question mark, the exclamation mark, the dollar sign, and the euro sign. For other characters that fall outside the ASCII range (U+0001..U+007F) and those that are not further specified in PEP 3131, the query parser will raise an error. This excludes whitespace different than the space character, but also the hashtag (as it is used for comments) and the backtick itself (backtick can also not be escaped).
+
+In a special case, quotes that make a pair around a backtick can confuse the parser. For example, `it's` > `that's` will raise an error, as it forms a quoted string ('s > `that') with a backtick inside.
+
+See also the Python documentation about lexical analysis (https://docs.python.org/3/reference/lexical_analysis.html) in combination with the source code in pandas.core.computation.parsing.
+
+Examples
+
+df = pd.DataFrame({'A': range(1, 6),
+                   'B': range(10, 0, -2),
+                   'C C': range(10, 5, -1)})
+df
+   A   B  C C
+0  1  10   10
+1  2   8    9
+2  3   6    8
+3  4   4    7
+4  5   2    6
+df.query('A > B')
+   A  B  C C
+4  5  2    6
+The previous expression is equivalent to
+
+df[df.A > df.B]
+   A  B  C C
+4  5  2    6
+For columns with spaces in their name, you can use backtick quoting.
+
+df.query('B == `C C`')
+   A   B  C C
+0  1  10   10
+The previous expression is equivalent to
+
+df[df.B == df['C C']]
+   A   B  C C
+0  1  10   10
+----------------------------------------------------------------
+(method) def count(
+    axis: Axis = ...,
+    level: None = ...,
+    numeric_only: _bool = ...
+) -> Series
+Count non-NA cells for each column or row.
+
+The values None, NaN, NaT, and optionally numpy.inf (depending on pandas.options.mode.use_inf_as_na) are considered NA.
+
+Parameters
+axis : {0 or 'index', 1 or 'columns'}, default 0
+    If 0 or 'index' counts are generated for each column. If 1 or 'columns' counts are generated for each row.
+numeric_only : bool, default False
+    Include only float, int or boolean data.
+
+Returns
+Series or DataFrame
+    For each column/row the number of non-NA/null entries. If level is specified returns a DataFrame.
+
+See Also
+Series.count: Number of non-NA elements in a Series.
+DataFrame.value_counts: Count unique combinations of columns.
+DataFrame.shape: Number of DataFrame rows and columns (including NA
+    elements).
+DataFrame.isna: Boolean same-sized DataFrame showing places of NA
+    elements.
+
+Examples
+Constructing DataFrame from a dictionary:
+
+>>> df = pd.DataFrame({"Person":
+...                    ["John", "Myla", "Lewis", "John", "Myla"],
+...                    "Age": [24., np.nan, 21., 33, 26],
+...                    "Single": [False, True, True, True, False]})
+>>> df
+   Person   Age  Single
+0    John  24.0   False
+1    Myla   NaN    True
+2   Lewis  21.0    True
+3    John  33.0    True
+4    Myla  26.0   False
+Notice the uncounted NA values:
+
+>>> df.count()
+Person    5
+Age       4
+Single    5
+dtype: int64
+Counts for each **row**:
+
+>>> df.count(axis='columns')
+0    3
+1    2
+2    3
+3    3
+4    3
+dtype: int64
+----------------------------------------------
+pandas.DataFrame.reset_index
+DataFrame.reset_index(level=None, *, drop=False, inplace=False, col_level=0, col_fill='', allow_duplicates=_NoDefault.no_default, names=None)[source]
+Reset the index, or a level of it.
+
+Reset the index of the DataFrame, and use the default one instead. If the DataFrame has a MultiIndex, this method can remove one or more levels.
+
+Parameters
+levelint, str, tuple, or list, default None
+Only remove the given levels from the index. Removes all levels by default.
+
+dropbool, default False
+Do not try to insert index into dataframe columns. This resets the index to the default integer index.
+
+inplacebool, default False
+Whether to modify the DataFrame rather than creating a new one.
+
+col_levelint or str, default 0
+If the columns have multiple levels, determines which level the labels are inserted into. By default it is inserted into the first level.
+
+col_fillobject, default ‘’
+If the columns have multiple levels, determines how the other levels are named. If None then the index name is repeated.
+
+allow_duplicatesbool, optional, default lib.no_default
+Allow duplicate column labels to be created.
+
+New in version 1.5.0.
+
+namesint, str or 1-dimensional list, default None
+Using the given string, rename the DataFrame column which contains the index data. If the DataFrame has a MultiIndex, this has to be a list or tuple with length equal to the number of levels.
+
+New in version 1.5.0.
+
+Returns
+DataFrame or None
+DataFrame with the new index or None if inplace=True.
+
+See also
+
+DataFrame.set_index
+Opposite of reset_index.
+
+DataFrame.reindex
+Change to new indices or expand indices.
+
+DataFrame.reindex_like
+Change to same indices as other DataFrame.
+
+Examples
+
+df = pd.DataFrame([('bird', 389.0),
+                   ('bird', 24.0),
+                   ('mammal', 80.5),
+                   ('mammal', np.nan)],
+                  index=['falcon', 'parrot', 'lion', 'monkey'],
+                  columns=('class', 'max_speed'))
+df
+         class  max_speed
+falcon    bird      389.0
+parrot    bird       24.0
+lion    mammal       80.5
+monkey  mammal        NaN
+When we reset the index, the old index is added as a column, and a new sequential index is used:
+
+df.reset_index()
+    index   class  max_speed
+0  falcon    bird      389.0
+1  parrot    bird       24.0
+2    lion  mammal       80.5
+3  monkey  mammal        NaN
+We can use the drop parameter to avoid the old index being added as a column:
+
+df.reset_index(drop=True)
+    class  max_speed
+0    bird      389.0
+1    bird       24.0
+2  mammal       80.5
+3  mammal        NaN
+You can also use reset_index with MultiIndex.
+
+index = pd.MultiIndex.from_tuples([('bird', 'falcon'),
+                                   ('bird', 'parrot'),
+                                   ('mammal', 'lion'),
+                                   ('mammal', 'monkey')],
+                                  names=['class', 'name'])
+columns = pd.MultiIndex.from_tuples([('speed', 'max'),
+                                     ('species', 'type')])
+df = pd.DataFrame([(389.0, 'fly'),
+                   (24.0, 'fly'),
+                   (80.5, 'run'),
+                   (np.nan, 'jump')],
+                  index=index,
+                  columns=columns)
+df
+               speed species
+                 max    type
+class  name
+bird   falcon  389.0     fly
+       parrot   24.0     fly
+mammal lion     80.5     run
+       monkey    NaN    jump
+Using the names parameter, choose a name for the index column:
+
+df.reset_index(names=['classes', 'names'])
+  classes   names  speed species
+                     max    type
+0    bird  falcon  389.0     fly
+1    bird  parrot   24.0     fly
+2  mammal    lion   80.5     run
+3  mammal  monkey    NaN    jump
+If the index has multiple levels, we can reset a subset of them:
+
+df.reset_index(level='class')
+         class  speed species
+                  max    type
+name
+falcon    bird  389.0     fly
+parrot    bird   24.0     fly
+lion    mammal   80.5     run
+monkey  mammal    NaN    jump
+If we are not dropping the index, by default, it is placed in the top level. We can place it in another level:
+
+df.reset_index(level='class', col_level=1)
+                speed species
+         class    max    type
+name
+falcon    bird  389.0     fly
+parrot    bird   24.0     fly
+lion    mammal   80.5     run
+monkey  mammal    NaN    jump
+When the index is inserted under another level, we can specify under which one with the parameter col_fill:
+
+df.reset_index(level='class', col_level=1, col_fill='species')
+              species  speed species
+                class    max    type
+name
+falcon           bird  389.0     fly
+parrot           bird   24.0     fly
+lion           mammal   80.5     run
+monkey         mammal    NaN    jump
+If we specify a nonexistent level for col_fill, it is created:
+
+df.reset_index(level='class', col_level=1, col_fill='genus')
+                genus  speed species
+                class    max    type
+name
+falcon           bird  389.0     fly
+parrot           bird   24.0     fly
+lion           mammal   80.5     run
+monkey         mammal    NaN    jump
+----------------------------------------------
+pandas.DataFrame.fillna
+DataFrame.fillna(value=None, *, method=None, axis=None, inplace=False, limit=None, downcast=None)[source]
+Fill NA/NaN values using the specified method.
+
+Parameters
+valuescalar, dict, Series, or DataFrame
+Value to use to fill holes (e.g. 0), alternately a dict/Series/DataFrame of values specifying which value to use for each index (for a Series) or column (for a DataFrame). Values not in the dict/Series/DataFrame will not be filled. This value cannot be a list.
+
+method{‘backfill’, ‘bfill’, ‘ffill’, None}, default None
+Method to use for filling holes in reindexed Series:
+
+ffill: propagate last valid observation forward to next valid.
+
+backfill / bfill: use next valid observation to fill gap.
+
+axis{0 or ‘index’, 1 or ‘columns’}
+Axis along which to fill missing values. For Series this parameter is unused and defaults to 0.
+
+inplacebool, default False
+If True, fill in-place. Note: this will modify any other views on this object (e.g., a no-copy slice for a column in a DataFrame).
+
+limitint, default None
+If method is specified, this is the maximum number of consecutive NaN values to forward/backward fill. In other words, if there is a gap with more than this number of consecutive NaNs, it will only be partially filled. If method is not specified, this is the maximum number of entries along the entire axis where NaNs will be filled. Must be greater than 0 if not None.
+
+downcastdict, default is None
+A dict of item->dtype of what to downcast if possible, or the string ‘infer’ which will try to downcast to an appropriate equal type (e.g. float64 to int64 if possible).
+
+Returns
+DataFrame or None
+Object with missing values filled or None if inplace=True.
+
+See also
+
+interpolate
+Fill NaN values using interpolation.
+
+reindex
+Conform object to new index.
+
+asfreq
+Convert TimeSeries to specified frequency.
+
+Examples
+
+df = pd.DataFrame([[np.nan, 2, np.nan, 0],
+                   [3, 4, np.nan, 1],
+                   [np.nan, np.nan, np.nan, np.nan],
+                   [np.nan, 3, np.nan, 4]],
+                  columns=list("ABCD"))
+df
+     A    B   C    D
+0  NaN  2.0 NaN  0.0
+1  3.0  4.0 NaN  1.0
+2  NaN  NaN NaN  NaN
+3  NaN  3.0 NaN  4.0
+Replace all NaN elements with 0s.
+
+df.fillna(0)
+     A    B    C    D
+0  0.0  2.0  0.0  0.0
+1  3.0  4.0  0.0  1.0
+2  0.0  0.0  0.0  0.0
+3  0.0  3.0  0.0  4.0
+We can also propagate non-null values forward or backward.
+
+df.fillna(method="ffill")
+     A    B   C    D
+0  NaN  2.0 NaN  0.0
+1  3.0  4.0 NaN  1.0
+2  3.0  4.0 NaN  1.0
+3  3.0  3.0 NaN  4.0
+Replace all NaN elements in column ‘A’, ‘B’, ‘C’, and ‘D’, with 0, 1, 2, and 3 respectively.
+
+values = {"A": 0, "B": 1, "C": 2, "D": 3}
+df.fillna(value=values)
+     A    B    C    D
+0  0.0  2.0  2.0  0.0
+1  3.0  4.0  2.0  1.0
+2  0.0  1.0  2.0  3.0
+3  0.0  3.0  2.0  4.0
+Only replace the first NaN element.
+
+df.fillna(value=values, limit=1)
+     A    B    C    D
+0  0.0  2.0  2.0  0.0
+1  3.0  4.0  NaN  1.0
+2  NaN  1.0  NaN  3.0
+3  NaN  3.0  NaN  4.0
+When filling using a DataFrame, replacement happens along the same column names and same indices
+
+df2 = pd.DataFrame(np.zeros((4, 4)), columns=list("ABCE"))
+df.fillna(df2)
+     A    B    C    D
+0  0.0  2.0  0.0  0.0
+1  3.0  4.0  0.0  1.0
+2  0.0  0.0  0.0  NaN
+3  0.0  3.0  0.0  4.0
+Note that column D is not affected since it is not present in df2.
+----------------------------------------------------
+pandas.DataFrame.interpolate
+DataFrame.interpolate(method='linear', *, axis=0, limit=None, inplace=False, limit_direction=None, limit_area=None, downcast=None, **kwargs)[source]
+Fill NaN values using an interpolation method.
+
+Please note that only method='linear' is supported for DataFrame/Series with a MultiIndex.
+
+Parameters
+methodstr, default ‘linear’
+Interpolation technique to use. One of:
+
+‘linear’: Ignore the index and treat the values as equally spaced. This is the only method supported on MultiIndexes.
+
+‘time’: Works on daily and higher resolution data to interpolate given length of interval.
+
+‘index’, ‘values’: use the actual numerical values of the index.
+
+‘pad’: Fill in NaNs using existing values.
+
+‘nearest’, ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’, ‘barycentric’, ‘polynomial’: Passed to scipy.interpolate.interp1d, whereas ‘spline’ is passed to scipy.interpolate.UnivariateSpline. These methods use the numerical values of the index. Both ‘polynomial’ and ‘spline’ require that you also specify an order (int), e.g. df.interpolate(method='polynomial', order=5). Note that, slinear method in Pandas refers to the Scipy first order spline instead of Pandas first order spline.
+
+‘krogh’, ‘piecewise_polynomial’, ‘spline’, ‘pchip’, ‘akima’, ‘cubicspline’: Wrappers around the SciPy interpolation methods of similar names. See Notes.
+
+‘from_derivatives’: Refers to scipy.interpolate.BPoly.from_derivatives which replaces ‘piecewise_polynomial’ interpolation method in scipy 0.18.
+
+axis{{0 or ‘index’, 1 or ‘columns’, None}}, default None
+Axis to interpolate along. For Series this parameter is unused and defaults to 0.
+
+limitint, optional
+Maximum number of consecutive NaNs to fill. Must be greater than 0.
+
+inplacebool, default False
+Update the data in place if possible.
+
+limit_direction{{‘forward’, ‘backward’, ‘both’}}, Optional
+Consecutive NaNs will be filled in this direction.
+
+If limit is specified:
+If ‘method’ is ‘pad’ or ‘ffill’, ‘limit_direction’ must be ‘forward’.
+
+If ‘method’ is ‘backfill’ or ‘bfill’, ‘limit_direction’ must be ‘backwards’.
+
+If ‘limit’ is not specified:
+If ‘method’ is ‘backfill’ or ‘bfill’, the default is ‘backward’
+
+else the default is ‘forward’
+
+Changed in version 1.1.0: raises ValueError if limit_direction is ‘forward’ or ‘both’ and method is ‘backfill’ or ‘bfill’. raises ValueError if limit_direction is ‘backward’ or ‘both’ and method is ‘pad’ or ‘ffill’.
+
+limit_area{{None, ‘inside’, ‘outside’}}, default None
+If limit is specified, consecutive NaNs will be filled with this restriction.
+
+None: No fill restriction.
+
+‘inside’: Only fill NaNs surrounded by valid values (interpolate).
+
+‘outside’: Only fill NaNs outside valid values (extrapolate).
+
+downcastoptional, ‘infer’ or None, defaults to None
+Downcast dtypes if possible.
+
+``**kwargs``optional
+Keyword arguments to pass on to the interpolating function.
+
+Returns
+Series or DataFrame or None
+Returns the same object type as the caller, interpolated at some or all NaN values or None if inplace=True.
+
+See also
+
+fillna
+Fill missing values using different methods.
+
+scipy.interpolate.Akima1DInterpolator
+Piecewise cubic polynomials (Akima interpolator).
+
+scipy.interpolate.BPoly.from_derivatives
+Piecewise polynomial in the Bernstein basis.
+
+scipy.interpolate.interp1d
+Interpolate a 1-D function.
+
+scipy.interpolate.KroghInterpolator
+Interpolate polynomial (Krogh interpolator).
+
+scipy.interpolate.PchipInterpolator
+PCHIP 1-d monotonic cubic interpolation.
+
+scipy.interpolate.CubicSpline
+Cubic spline data interpolator.
+
+Notes
+
+The ‘krogh’, ‘piecewise_polynomial’, ‘spline’, ‘pchip’ and ‘akima’ methods are wrappers around the respective SciPy implementations of similar names. These use the actual numerical values of the index. For more information on their behavior, see the SciPy documentation.
+
+Examples
+
+Filling in NaN in a Series via linear interpolation.
+
+s = pd.Series([0, 1, np.nan, 3])
+s
+0    0.0
+1    1.0
+2    NaN
+3    3.0
+dtype: float64
+s.interpolate()
+0    0.0
+1    1.0
+2    2.0
+3    3.0
+dtype: float64
+Filling in NaN in a Series by padding, but filling at most two consecutive NaN at a time.
+
+s = pd.Series([np.nan, "single_one", np.nan,
+               "fill_two_more", np.nan, np.nan, np.nan,
+               4.71, np.nan])
+s
+0              NaN
+1       single_one
+2              NaN
+3    fill_two_more
+4              NaN
+5              NaN
+6              NaN
+7             4.71
+8              NaN
+dtype: object
+s.interpolate(method='pad', limit=2)
+0              NaN
+1       single_one
+2       single_one
+3    fill_two_more
+4    fill_two_more
+5    fill_two_more
+6              NaN
+7             4.71
+8             4.71
+dtype: object
+Filling in NaN in a Series via polynomial interpolation or splines: Both ‘polynomial’ and ‘spline’ methods require that you also specify an order (int).
+
+s = pd.Series([0, 2, np.nan, 8])
+s.interpolate(method='polynomial', order=2)
+0    0.000000
+1    2.000000
+2    4.666667
+3    8.000000
+dtype: float64
+Fill the DataFrame forward (that is, going down) along each column using linear interpolation.
+
+Note how the last entry in column ‘a’ is interpolated differently, because there is no entry after it to use for interpolation. Note how the first entry in column ‘b’ remains NaN, because there is no entry before it to use for interpolation.
+
+df = pd.DataFrame([(0.0, np.nan, -1.0, 1.0),
+                   (np.nan, 2.0, np.nan, np.nan),
+                   (2.0, 3.0, np.nan, 9.0),
+                   (np.nan, 4.0, -4.0, 16.0)],
+                  columns=list('abcd'))
+df
+     a    b    c     d
+0  0.0  NaN -1.0   1.0
+1  NaN  2.0  NaN   NaN
+2  2.0  3.0  NaN   9.0
+3  NaN  4.0 -4.0  16.0
+df.interpolate(method='linear', limit_direction='forward', axis=0)
+     a    b    c     d
+0  0.0  NaN -1.0   1.0
+1  1.0  2.0 -2.0   5.0
+2  2.0  3.0 -3.0   9.0
+3  2.0  4.0 -4.0  16.0
+Using polynomial interpolation.
+
+df['d'].interpolate(method='polynomial', order=2)
+0     1.0
+1     4.0
+2     9.0
+3    16.0
+Name: d, dtype: float64
+-------------------------------------------
+(method) def unique() -> ndarray
+Return unique values of Series object.
+
+Uniques are returned in order of appearance. Hash table-based unique, therefore does NOT sort.
+
+Returns
+ndarray or ExtensionArray
+    The unique values returned as a NumPy array. See Notes.
+
+See Also
+Series.drop_duplicates : Return Series with duplicate values removed.
+unique : Top-level unique method for any 1-d array-like object.
+Index.unique : Return Index with unique values from an Index object.
+
+Notes
+Returns the unique values as a NumPy array. In case of an extension-array backed Series, a new ~api.extensions.ExtensionArray of that type with just the unique values is returned. This includes
+
+Categorical
+Period
+Datetime with Timezone
+Datetime without Timezone
+Timedelta
+Interval
+Sparse
+IntegerNA
+See Examples section.
+
+Examples
+>>> pd.Series([2, 1, 3, 3], name='A').unique()
+array([2, 1, 3])
+>>> pd.Series([pd.Timestamp('2016-01-01') for _ in range(3)]).unique()
+<DatetimeArray>
+['2016-01-01 00:00:00']
+Length: 1, dtype: datetime64[ns]
+>>> pd.Series([pd.Timestamp('2016-01-01', tz='US/Eastern')
+...            for _ in range(3)]).unique()
+<DatetimeArray>
+['2016-01-01 00:00:00-05:00']
+Length: 1, dtype: datetime64[ns, US/Eastern]
+An Categorical will return categories in the order of appearance and with the same dtype.
+
+>>> pd.Series(pd.Categorical(list('baabc'))).unique()
+['b', 'a', 'c']
+Categories (3, object): ['a', 'b', 'c']
+>>> pd.Series(pd.Categorical(list('baabc'), categories=list('abc'),
+...                          ordered=True)).unique()
+['b', 'a', 'c']
+Categories (3, object): ['a' < 'b' < 'c']
+-------------------------------------------------------
+Parameters
+func : function
+    Function to apply to each column or row.
+axis : {0 or 'index', 1 or 'columns'}, default 0
+    Axis along which the function is applied:
+
+0 or 'index': apply function to each column.
+1 or 'columns': apply function to each row.
+raw : bool, default False
+    Determines if row or column is passed as a Series or ndarray object:
+
+False : passes each row or column as a Series to the function.
+True : the passed function will receive ndarray objects instead. If you are just applying a NumPy reduction function this will achieve much better performance.
+result_type : {'expand', 'reduce', 'broadcast', None}, default None
+    These only act when axis=1 (columns):
+
+'expand' : list-like results will be turned into columns.
+'reduce' : returns a Series if possible rather than expanding list-like results. This is the opposite of 'expand'.
+'broadcast' : results will be broadcast to the original shape of the DataFrame, the original index and columns will be retained.
+    The default behaviour (None) depends on the return value of the
+    applied function: list-like results will be returned as a Series of those. However if the apply function returns a Series these are expanded to columns.
+args : tuple
+    Positional arguments to pass to func in addition to the array/series.
+**kwargs
+    Additional keyword arguments to pass as keywords arguments to func.
+
+Returns
+Series or DataFrame
+    Result of applying func along the given axis of the DataFrame.
+
+See Also
+DataFrame.applymap: For elementwise operations.
+DataFrame.aggregate: Only perform aggregating type operations.
+DataFrame.transform: Only perform transforming type operations.
+
+Notes
+Functions that mutate the passed object can produce unexpected
+behavior or errors and are not supported. See gotchas.udf-mutation for more details.
+
+Examples
+>>> df = pd.DataFrame([[4, 9]] * 3, columns=['A', 'B'])
+>>> df
+   A  B
+0  4  9
+1  4  9
+2  4  9
+Using a numpy universal function (in this case the same as np.sqrt(df)):
+
+>>> df.apply(np.sqrt)
+     A    B
+0  2.0  3.0
+1  2.0  3.0
+2  2.0  3.0
+Using a reducing function on either axis
+
+>>> df.apply(np.sum, axis=0)
+A    12
+B    27
+dtype: int64
+>>> df.apply(np.sum, axis=1)
+0    13
+1    13
+2    13
+dtype: int64
+Returning a list-like will result in a Series
+
+>>> df.apply(lambda x: [1, 2], axis=1)
+0    [1, 2]
+1    [1, 2]
+2    [1, 2]
+dtype: object
+Passing result_type='expand' will expand list-like results to columns of a Dataframe
+
+>>> df.apply(lambda x: [1, 2], axis=1, result_type='expand')
+   0  1
+0  1  2
+1  1  2
+2  1  2
+Returning a Series inside the function is similar to passing result_type='expand'. The resulting column names will be the Series index.
+
+>>> df.apply(lambda x: pd.Series([1, 2], index=['foo', 'bar']), axis=1)
+   foo  bar
+0    1    2
+1    1    2
+2    1    2
+Passing result_type='broadcast' will ensure the same shape result, whether list-like or scalar is returned by the function, and broadcast it along the axis. The resulting column names will be the originals.
+
+>>> df.apply(lambda x: [1, 2], axis=1, result_type='broadcast')
+   A  B
+0  1  2
+1  1  2
+2  1  2
+--------------------------------------------------------------
+Convert argument to a numeric type.
+
+The default return dtype is float64 or int64 depending on the data supplied. Use the downcast parameter to obtain other dtypes.
+
+Please note that precision loss may occur if really large numbers are passed in. Due to the internal limitations of ndarray, if numbers smaller than -9223372036854775808 (np.iinfo(np.int64).min) or larger than 18446744073709551615 (np.iinfo(np.uint64).max) are passed in, it is very likely they will be converted to float so that they can be stored in an ndarray. These warnings apply similarly to Series since it internally leverages ndarray.
+
+Parameters
+arg : scalar, list, tuple, 1-d array, or Series
+    Argument to be converted.
+errors : {'ignore', 'raise', 'coerce'}, default 'raise'
+
+If 'raise', then invalid parsing will raise an exception.
+
+If 'coerce', then invalid parsing will be set as NaN.
+
+If 'ignore', then invalid parsing will return the input. downcast : str, default None Can be 'integer', 'signed', 'unsigned', or 'float'. If not None, and if the data has been successfully cast to a numerical dtype (or if the data was numeric to begin with), downcast that resulting data to the smallest numerical dtype possible according to the following rules:
+
+'integer' or 'signed': smallest signed int dtype (min.: np.int8)
+
+'unsigned': smallest unsigned int dtype (min.: np.uint8)
+
+'float': smallest float dtype (min.: np.float32)
+
+    As this behaviour is separate from the core conversion to numeric values, any errors raised during the downcasting will be surfaced regardless of the value of the 'errors' input.
+
+    In addition, downcasting will only occur if the size of the resulting data's dtype is strictly larger than the dtype it is to be cast to, so if none of the dtypes checked satisfy that specification, no downcasting will be performed on the data.
+dtype_backend : {"numpy_nullable", "pyarrow"}, defaults to NumPy backed DataFrames
+    Which dtype_backend to use, e.g. whether a DataFrame should have NumPy arrays, nullable dtypes are used for all dtypes that have a nullable implementation when "numpy_nullable" is set, pyarrow is used for all dtypes if "pyarrow" is set.
+
+    The dtype_backends are still experimential.
+
+Returns
+ret
+    Numeric if parsing succeeded. Return type depends on input. Series if Series, otherwise ndarray.
+
+See Also
+DataFrame.astype : Cast argument to a specified dtype.
+to_datetime : Convert argument to datetime.
+to_timedelta : Convert argument to timedelta.
+numpy.ndarray.astype : Cast a numpy array to a specified type.
+DataFrame.convert_dtypes : Convert dtypes.
+
+Examples
+Take separate series and convert to numeric, coercing when told to
+
+>>> s = pd.Series(['1.0', '2', -3])
+>>> pd.to_numeric(s)
+0    1.0
+1    2.0
+2   -3.0
+dtype: float64
+>>> pd.to_numeric(s, downcast='float')
+0    1.0
+1    2.0
+2   -3.0
+dtype: float32
+>>> pd.to_numeric(s, downcast='signed')
+0    1
+1    2
+2   -3
+dtype: int8
+>>> s = pd.Series(['apple', '1.0', '2', -3])
+>>> pd.to_numeric(s, errors='ignore')
+0    apple
+1      1.0
+2        2
+3       -3
+dtype: object
+>>> pd.to_numeric(s, errors='coerce')
+0    NaN
+1    1.0
+2    2.0
+3   -3.0
+dtype: float64
+Downcasting of nullable integer and floating dtypes is supported:
+
+>>> s = pd.Series([1, 2, 3], dtype="Int64")
+>>> pd.to_numeric(s, downcast="integer")
+0    1
+1    2
+2    3
+dtype: Int8
+>>> s = pd.Series([1.0, 2.1, 3.0], dtype="Float64")
+>>> pd.to_numeric(s, downcast="float")
+0    1.0
+1    2.1
+2    3.0
+dtype: Float32
+--------------------------------------------------------
+Convert argument to timedelta.
+
+Timedeltas are absolute differences in times, expressed in difference units (e.g. days, hours, minutes, seconds). This method converts an argument from a recognized timedelta format / value into a Timedelta type.
+
+Parameters
+arg : str, timedelta, list-like or Series
+    The data to be converted to timedelta.
+
+unit : str, optional
+    Denotes the unit of the arg for numeric arg. Defaults to "ns".
+
+    Possible values:
+
+'W'
+'D' / 'days' / 'day'
+'hours' / 'hour' / 'hr' / 'h'
+'m' / 'minute' / 'min' / 'minutes' / 'T'
+'S' / 'seconds' / 'sec' / 'second'
+'ms' / 'milliseconds' / 'millisecond' / 'milli' / 'millis' / 'L'
+'us' / 'microseconds' / 'microsecond' / 'micro' / 'micros' / 'U'
+'ns' / 'nanoseconds' / 'nano' / 'nanos' / 'nanosecond' / 'N'
+errors : {'ignore', 'raise', 'coerce'}, default 'raise'
+
+If 'raise', then invalid parsing will raise an exception.
+If 'coerce', then invalid parsing will be set as NaT.
+If 'ignore', then invalid parsing will return the input.
+Returns
+timedelta
+    If parsing succeeded. Return type depends on input:
+
+list-like: TimedeltaIndex of timedelta64 dtype
+Series: Series of timedelta64 dtype
+scalar: Timedelta
+See Also
+DataFrame.astype : Cast argument to a specified dtype.
+to_datetime : Convert argument to datetime.
+convert_dtypes : Convert dtypes.
+
+Notes
+If the precision is higher than nanoseconds, the precision of the duration is truncated to nanoseconds for string inputs.
+
+Examples
+Parsing a single string to a Timedelta:
+
+>>> pd.to_timedelta('1 days 06:05:01.00003')
+Timedelta('1 days 06:05:01.000030')
+>>> pd.to_timedelta('15.5us')
+Timedelta('0 days 00:00:00.000015500')
+Parsing a list or array of strings:
+
+>>> pd.to_timedelta(['1 days 06:05:01.00003', '15.5us', 'nan'])
+TimedeltaIndex(['1 days 06:05:01.000030', '0 days 00:00:00.000015500', NaT],
+               dtype='timedelta64[ns]', freq=None)
+Converting numbers by specifying the unit keyword argument:
+
+>>> pd.to_timedelta(np.arange(5), unit='s')
+TimedeltaIndex(['0 days 00:00:00', '0 days 00:00:01', '0 days 00:00:02',
+                '0 days 00:00:03', '0 days 00:00:04'],
+               dtype='timedelta64[ns]', freq=None)
+>>> pd.to_timedelta(np.arange(5), unit='d')
+TimedeltaIndex(['0 days', '1 days', '2 days', '3 days', '4 days'],
+               dtype='timedelta64[ns]', freq=None)
+-----------------------------------------------
