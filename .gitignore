@@ -22,3 +22,6 @@ Thumbs.db
 # Ignore virtual environments
 venv/
 .env/
+
+# Ignore VS Code settings folder
+.vscode/
