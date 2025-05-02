@@ -51,39 +51,6 @@ len(list_files)
 # endregion
 
 
-# %% The second cell (should be run only once)
-#! Deprecated method, do not use
-# ? search how to do it
-# todo: I must change this
-# // this is the function
-# * Important to notice the difference
-# @ MyParam is the parameter of the function
-
-
-# for i in range(0, len(list_files)):
-#     for j in range(0, int(0.8 * len(list_files[i]))):
-#         src = os.path.join(
-#             train_root_dir, os.listdir(train_root_dir)[i], list_files[i][j]
-#         )
-#         des = os.path.join(
-#             output_train_dir, os.listdir(train_root_dir)[i], list_files[i][j]
-#         )
-#         des_dir = os.path.join(output_train_dir, os.listdir(train_root_dir)[i])
-#         os.makedirs(des_dir, exist_ok=True)
-#         shutil.copyfile(src, des)
-
-
-# for i in range(0, len(list_files)):
-#     for j in range(int(0.8 * len(list_files[i])), len(list_files[i])):
-#         src = os.path.join(
-#             train_root_dir, os.listdir(train_root_dir)[i], list_files[i][j]
-#         )
-#         des = os.path.join(
-#             output_validation_dir, os.listdir(train_root_dir)[i], list_files[i][j]
-#         )
-#         des_dir = os.path.join(output_validation_dir, os.listdir(train_root_dir)[i])
-#         os.makedirs(des_dir, exist_ok=True)
-#         shutil.copyfile(src, des)
 
 
 # %% Show some images
@@ -102,19 +69,7 @@ plt.tight_layout()
 plt.show()
 
 
-# test_image = cv2.imread(image_path)
-# test_image=cv2.cvtColor(test_image, cv2.COLOR_BGR2RGB)
-# plt.imshow(test_image)
-# plt.show()
 
-# test_image2 = cv2.imread(image_path, cv2.IMREAD_COLOR)
-# plt.imshow(test_image2)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
-# import PIL
-# image_3=PIL.Image.open(image_path)
-# image_3
 
 # %% ImageDataGenerator for Train-Test-Validation
 # data=ImageDataGenerator() #This is deprecated
@@ -304,32 +259,6 @@ for i, cmap in enumerate(colormaps):
 plt.tight_layout()
 plt.show()
 """
-# for category in train_categ:
-#     cat_sdir = os.path.join(train_root_dir, category)
-#     cat_desdir = os.path.join(output_train_dir, category)
-#     os.makedirs(cat_desdir, exist_ok=True)
-#     Samples = [f"{i}.jpg" for i in range(0, int(0.8 * len(os.listdir(cat_sdir))))]
-#     for file in Samples:
-#         src = os.path.join(cat_sdir, file)
-#         des = os.path.join(cat_desdir, file)
-#         if os.path.exists(src):
-#             print(src + "to" + des)
-#             shutil.copyfile(src, des)
-# print("----------------------")
-# for category in train_categ:
-#     cat_sdir = os.path.join(train_root_dir, category)
-#     cat_desdir = os.path.join(output_validation_dir, category)
-#     os.makedirs(cat_desdir, exist_ok=True)
-#     Samples = [
-#         f"{i}.jpg"
-#         for i in range(int(0.8 * len(os.listdir(cat_sdir))), len(os.listdir(cat_sdir)))
-#     ]
-#     for file in Samples:
-#         src = os.path.join(cat_sdir, file)
-#         des = os.path.join(cat_desdir, file)
-#         if os.path.exists(src):
-#             print(src + "to" + des)
-#             shutil.copyfile(src, des)
 
 '''
 # #Create train Test and Validation folders first
